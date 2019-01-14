@@ -1,7 +1,7 @@
 $(document).ready(function(){
 
-const boardWidth = 4;
-const boardHeight = 4;
+const boardWidth = 6;
+const boardHeight = 6;
 let numOfButtons = 0;
 let player1Score = 0;
 let player2Score = 0;
@@ -66,29 +66,31 @@ function changePlayer() {
 }
 
 function checkWinner(id) {
-    let boxIDArray = id.split('');
-    let boxCount = 0;
+    let boxCount = 1;
     let boxColor = $('#'+id).css("background-color");
     checkRight();
     checkLeft();
 
     function checkRight() {
         let boxID = id;
-        for(var i = 0; i < 4; i++) {
+        let boxIDArray = id.split('');
+        boxIDArray[1] = parseInt(boxIDArray[1]) + 1;
+        boxID = boxIDArray.join('');
+        for(var i = 1; i < 4; i++) {
             if($('#'+boxID).css("background-color") === boxColor) {
                 boxCount += 1;
                 boxIDArray[1] = parseInt(boxIDArray[1]) + 1;
                 boxID = boxIDArray.join('');
-                console.log(boxID);
-                
-                console.log(boxCount);
             }  
         }
     }
 
     function checkLeft() {
         let boxID = id;
-        for(var i = 0; i < 4; i++) {
+        let boxIDArray = id.split('');
+        boxIDArray[1] = parseInt(boxIDArray[1]) - 1;
+        boxID = boxIDArray.join('');
+        for(var i = 1; i < 4; i++) {
             if($('#'+boxID).css("background-color") === boxColor) {
                 boxCount += 1;
                 boxIDArray[1] = parseInt(boxIDArray[1]) - 1;
@@ -100,7 +102,7 @@ function checkWinner(id) {
         }
     }
 
-    if(boxCount === 4) {
+    if(boxCount >= 4) {
         alert('You win!');
         $('.button').prop('disabled', true);
     } else {
