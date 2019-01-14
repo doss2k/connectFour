@@ -1,6 +1,6 @@
 $(document).ready(function(){
 
-const boardWidth = 6;
+const boardWidth = 10;
 const boardHeight = 6;
 let numOfButtons = 0;
 let player1Score = 0;
@@ -35,6 +35,10 @@ function nextChar(letter) {
     return String.fromCharCode(letter.charCodeAt(0) + 1);
 }
 
+function prevChar(letter) {
+    return String.fromCharCode(letter.charCodeAt(0) - 1);
+}
+
 $(".button").on('click', function(){
     markBox(this.id);    
 });
@@ -50,7 +54,6 @@ function markBox(id) {
         $('#'+id).prop('disabled', true);
     }
     numOfButtons += 1;
-    changePlayer();
     setTimeout(checkWinner, 50, boxClicked);
 }
 
@@ -70,6 +73,10 @@ function checkWinner(id) {
     let boxColor = $('#'+id).css("background-color");
     checkRight();
     checkLeft();
+    winCond();
+    checkDown();
+    checkUp();
+    winCond();
 
     function checkRight() {
         let boxID = id;
@@ -85,6 +92,7 @@ function checkWinner(id) {
         }
     }
 
+
     function checkLeft() {
         let boxID = id;
         let boxIDArray = id.split('');
@@ -95,28 +103,72 @@ function checkWinner(id) {
                 boxCount += 1;
                 boxIDArray[1] = parseInt(boxIDArray[1]) - 1;
                 boxID = boxIDArray.join('');
-                console.log(boxID);
-                console.log(boxCount);
+                
                 
             }  
         }
     }
 
-    if(boxCount >= 4) {
-        alert('You win!');
-        $('.button').prop('disabled', true);
-    } else {
-        boxCount = 0;
+    function checkDown() {
+        let boxID = id;
+        let boxIDArray = id.split('');
+        boxIDArray[0] = nextChar(boxIDArray[0]);
+        boxID = boxIDArray.join('');
+        for(var i = 1; i < 4; i++) {
+            if($('#'+boxID).css("background-color") === boxColor) {
+                boxCount += 1;
+                boxIDArray[0] = nextChar(boxIDArray[0]);
+                boxID = boxIDArray.join('');
+                
+            }  
+        }
+
     }
 
+    function checkUp() {
+        let boxID = id;
+        let boxIDArray = id.split('');
+        if(boxIDArray[0] !== 'a') {
+            boxIDArray[0] = prevChar(boxIDArray[0]);
+            boxID = boxIDArray.join('');
+            for(var i = 1; i < 4; i++) {
+                if($('#'+boxID).css("background-color") === boxColor) {
+                    boxCount += 1;
+                    if(boxIDArray[0] !== 'a') {
+                        boxIDArray[0] = prevChar(boxIDArray[0]);
+                        boxID = boxIDArray.join('');
+                    } else {
+                        return;
+                    }
+                }  
+            }
+        }
+    }
 
-    if(numOfButtons === boardWidth * boardHeight) {
-        alert('It is a tie!!');
-        ties += 1;
+    function winCond() {
+        if(boxCount >= 4) {
+            if(player === 1) {
+                alert('Congrats ' + player1 + ' you win!!');
+                player1Score += 1;
+                $('.button').prop('disabled', true);
+            
+            } else if (player === 2) {
+                alert('Congrats ' + player2 + ' you win!!');
+                player2Score += 1;
+                $('.button').prop('disabled', true);
+            } 
+        } else if(numOfButtons === boardWidth * boardHeight) {
+            alert('It is a tie!!');
+            ties += 1;
+            } else {
+                boxCount = 1
+            }
     }
 
     $('#score').html('<h2>Score - ' + player1 + ': ' + player1Score + '   ' + player2 + ': ' + player2Score + '   ' + 'Ties: ' + ties + '</h2>');
+    changePlayer();
 }
+    
 
 $("#startover").on('click', function(){
     resetGame();
